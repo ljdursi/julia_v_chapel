@@ -56,7 +56,7 @@ if nargs > 0
 	input_filename = ARGS[1]
 end
 if nargs > 1
-	k = atoi(ARGS[2])
+	k = parse(Int8, ARGS[2])
 end
 
 kmer_count(input_filename, k)
