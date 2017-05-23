@@ -26,7 +26,7 @@ proc main(args: [] string) {
     } 
   }
 
-  forall kmer in kmers {
+  for kmer in kmers {
     writeln(kmer, " ", kmer_counts[kmer]);
   }
 }
