@@ -1,24 +1,16 @@
-import Base.isless
-
-function update_counts(data::AbstractString, n::Int, counts::Dict{AbstractString, Int})
-    top = length(data) - n + 1
-    for i = 1:top
-        s = data[i : i+n-1]
-        if haskey(counts, s)
-            counts[s] += 1
-        else
-            counts[s] = 1
-        end
-    end
-    counts
-end
-
 function kmer_count(infile::String, k::Int)
 	sequences = read_sequences(infile)
 
-	counts = Dict{AbstractString, Int}()
+	counts = Dict{String, Int8}()
 	for seq in sequences
-		counts = update_counts(seq, k, counts)
+        for i = 1:length(seq)-k+1
+            kmer = seq[i : i+k-1]
+            if haskey(counts, kmer)
+                counts[kmer] += 1
+            else
+                counts[kmer] = 1
+            end
+        end
 	end 
 
 	for kmer in eachindex(counts)
@@ -29,22 +21,22 @@ end
 function read_sequences(input_filename::String)
 	sequences = String[]
 	inseq = false
-	currentseq = ""
+	currentseq = [""]
     input = open(input_filename, "r")
     for line in eachline(input)
         if line[1] == '>'
 			if inseq
-				push!(sequences, currentseq)
-				currentseq = ""
+				push!(sequences, join(currentseq))
+				currentseq = [""]
 			end
 			inseq = false
         else
         	inseq = true
-        	currentseq = string(currentseq, line)
+        	push!(currentseq, line)
         end
     end
     if inseq
-		push!(sequences, currentseq)
+		push!(sequences, join(currentseq))
 	end
 	return sequences
 end
