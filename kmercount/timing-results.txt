@@ -1,27 +1,27 @@
 # Julia
 
-real	0m4.862s
-user	0m4.797s
-sys	0m0.259s
+real	0m5.531s
+user	0m4.896s
+sys	0m0.346s
 
 # Chapel
 ## Compile:
 
-real	0m6.257s
-user	0m5.524s
-sys	0m0.366s
+real	0m7.438s
+user	0m5.858s
+sys	0m0.852s
 ## Run:
 QTHREADS: worker unit (core) does not exist on this machine.
 
-real	0m6.323s
-user	0m6.873s
-sys	0m0.275s
+real	0m7.162s
+user	0m7.272s
+sys	0m0.389s
 
 # Python
 
-real	0m8.272s
-user	0m7.851s
-sys	0m0.354s
+real	0m7.504s
+user	0m7.132s
+sys	0m0.294s
 # comparing results:
 ## python-chapel
 ## python-julia
