@@ -50,5 +50,3 @@ end
 if nargs > 1
     k = parse(Int8, ARGS[2])
 end
-
-@time kmer_count(input_filename, k)

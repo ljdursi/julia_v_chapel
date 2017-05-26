@@ -8,7 +8,7 @@ time julia ./kmercount.jl "${INFILE}" > julia-out.txt
 echo ""
 echo "# Chapel"
 echo "## Compile:"
-time chpl -O --specialize kmercount.chpl -o kmercount_chpl 
+time chpl --fast kmercount.chpl -o kmercount_chpl 
 echo "## Run:"
 time ./kmercount_chpl --input_filename="${INFILE}" > chapel-out.txt
 
