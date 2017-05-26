@@ -3,21 +3,15 @@ use IO;
 config const input_filename = "input.fa",
              k = 11;
 
-iter kmers_from_seq(sequence: string, int: k) {
-  for i in 1..(sequence.length-k+1) {
-      yield sequence[i..(i+k-1)];
-  }
-}
-
 proc main(args: [] string) {
   var sequences = readfasta(input_filename);
 
   var kmers : domain(string);
   var kmer_counts: [kmers] int;
 
-  for seq in sequences {
-    var kmer: string;
-    for kmer in kmers_from_seq(seq, k) {
+  for sequence in sequences {
+    for i in 1..(sequence.length-k+1) {
+      var kmer: string = sequence[i..(i+k-1)];
       if !kmers.member(kmer) {
         kmer_counts[kmer] = 0;
       } 
