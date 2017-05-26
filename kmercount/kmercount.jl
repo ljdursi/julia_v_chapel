@@ -1,15 +1,13 @@
+using DataStructures
+
 function kmer_count(infile::String, k::Int)
     sequences = read_sequences(infile)
 
-    counts = Dict{String, Int8}()
+    counts = DefaultDict{String, Int8}(0)
     for seq in sequences
         for i = 1:length(seq)-k+1
             kmer = seq[i : i+k-1]
-            if haskey(counts, kmer)
-                counts[kmer] += 1
-            else
-                counts[kmer] = 1
-            end
+            counts[kmer] += 1
         end
     end 
 

@@ -19,7 +19,6 @@ proc main(args: [] string) {
     var kmer: string;
     for kmer in kmers_from_seq(seq, k) {
       if !kmers.member(kmer) {
-        kmers += kmer;
         kmer_counts[kmer] = 0;
       } 
       kmer_counts[kmer] += 1;
