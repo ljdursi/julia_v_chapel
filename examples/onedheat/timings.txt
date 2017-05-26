@@ -1,0 +1,29 @@
+ Julia
+-0.01940631866455078
+-2.8164052590624366e-13
+  0.027049 seconds (103 allocations: 22.795 KiB)
+
+real	0m0.578s
+user	0m0.654s
+sys	0m0.165s
+
+# Chapel
+## Compile:
+
+real	0m4.758s
+user	0m4.248s
+sys	0m0.310s
+## Run:
+-4.70131e-24
+
+real	0m0.024s
+user	0m0.009s
+sys	0m0.002s
+
+# Python
+0.018528  seconds
+-1.37559698296e-12
+
+real	0m0.749s
+user	0m0.662s
+sys	0m0.076s

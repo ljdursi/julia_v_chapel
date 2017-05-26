@@ -5,6 +5,7 @@ import numpy as np
 import argparse
 import time
 
+
 @jit('f8[:](i4, i4, f8, f8, f8, f8, f8)', nopython=True)
 def onedheat(ngrid, ntimesteps, kappa, xleft, xright, tleft, tright):
     dx = (xright-xleft)/(ngrid-1)
@@ -15,12 +16,13 @@ def onedheat(ngrid, ntimesteps, kappa, xleft, xright, tleft, tright):
     temp[0], temp[ngrid+1] = tleft, tright
 
     for iteration in range(ntimesteps):
-        temp_new[1:ngrid] = temp[1:ngrid] + kappa*dt/(dx*dx)*\
+        temp_new[1:ngrid] = temp[1:ngrid] + kappa*dt/(dx*dx) * \
             (temp[2:ngrid+1] - 2.*temp[1:ngrid] + temp[0:ngrid-1])
 
         temp[1:ngrid] = temp_new[1:ngrid]
 
     return temp[1:ngrid]
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -34,6 +36,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     start = time.clock()
-    temps = onedheat(args.ngrid, args.ntimesteps, args.kappa, args.xleft, args.xright, args.tleft, args.tright)
-    print(time.clock() - start)
+    temps = onedheat(args.ngrid, args.ntimesteps, args.kappa,
+                     args.xleft, args.xright, args.tleft, args.tright)
+    print(time.clock() - start, " seconds")
     print(temps[args.ngrid//2])

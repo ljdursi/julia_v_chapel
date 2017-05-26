@@ -1,20 +1,21 @@
 #!/bin/bash
 
 readonly INFILE=ecoli.fa
+readonly BASE=kmercount
 
 echo "# Julia"
-time julia ./kmercount.jl "${INFILE}" > julia-out.txt 
+time julia ./${BASE}.jl "${INFILE}" > julia-out.txt 
 
 echo ""
 echo "# Chapel"
 echo "## Compile:"
-time chpl --fast kmercount.chpl -o kmercount_chpl 
+time chpl --fast ${BASE}.chpl -o ${BASE}_chpl 
 echo "## Run:"
-time ./kmercount_chpl --input_filename="${INFILE}" > chapel-out.txt
+time ./${BASE}_chpl --input_filename="${INFILE}" > chapel-out.txt
 
 echo ""
 echo "# Python"
-time python ./kmercount.py -i "${INFILE}" > python-out.txt 
+time python ./${BASE}.py -i "${INFILE}" > python-out.txt 
 
 sort julia-out.txt | grep -v "seconds" > julia-sorted-out.txt
 sort python-out.txt > python-sorted-out.txt
