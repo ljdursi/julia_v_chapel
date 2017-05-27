@@ -9,8 +9,8 @@ using PyPlot
 
         s = size(lp)
         data_plus_gc = zeros(s[1]+2*nguard, s[2]+2*nguard)
-        for i in 1:s[1]
-            for j in 1:s[2]
+        for j in 1:s[2]
+            for i in 1:s[1]
                 data_plus_gc[i+nguard, j+nguard] = lp[i,j]
             end
         end
@@ -42,15 +42,15 @@ end
 @everywhere function advect_data(dens, nguard, ngrid, velx, vely, dx, dy, dt)
     locdens = get_data_plus_gc(dens, nguard, ngrid)
 
-    s = size(localdens)
+    s = size(locdens)
     nx = s[1] - 2*nguard
     nx = s[2] - 2*nguard
 
-    gradx = zeros(localdens)
-    grady = zeros(localdens)
+    gradx = zeros(locdens)
+    grady = zeros(locdens)
 
-    for i in 1+nguard:nx+nguard
-        for j in 1+nguard:ny+nguard
+    for j in 1+nguard:ngrid+nguard
+        for i in 1+nguard:ngrid+nguard
         
             if velx > 0
                 gradx[i,j] = (3locdens[i,j] - 4locdens[i-1,j] + locdens[i-2,j])/(2dx)
@@ -62,11 +62,12 @@ end
                 grady[i,j] = (3locdens[i,j] - 4locdens[i,j-1] + locdens[i,j-1])/(2dy)
             else
                 grady[i,j-2] = (-locdens[i,j] + 4locdens[i,j-1] - 3locdens[i,j-2])/(2dy)
+            end
         end
     end
 
-    for i in 1+nguard:nx+nguard
-        for j in 1+nguard:ny+nguard
+    for j in 1+nguard:ny+nguard
+        for i in 1+nguard:nx+nguard
             locpart(dens)[i-nguard, j-nguard] -= dt*(velx*gradx[i,j] + vely*grady[i,j])
         end
     end
@@ -74,16 +75,21 @@ end
 
 function initial_conditions(ngrid, dx, dy, posx, posy, sigma)
     dens = zeros(ngrid, ngrid)
-    for i in 1:ngrid
-        x = (i-1)*dx
-        for j in 1:ngrid
-            y = (i-1)*dy
-            dens[i,j] = exp(-((x-posx)**2 + (y-posy)**2)/(sigma**2))
+    for j in 1:ngrid
+        y = (j-1)*dy
+        for i in 1:ngrid
+            x = (i-1)*dx
+            dens[i,j] = exp(-((x-posx)^2 + (y-posy)^2)/(sigma^2))
         end 
     end 
     distribute(dens)
 end
 
+function timestep(dens, nguard, ngrid, velx, vely, dx, dy, dt)
+    ps = procs(dens)
+    refs = [(@spawnat p advect_data(dens, nguard, ngrid, velx, vely, dx, dy, dt)) for p in ps]
+    pmap(fetch, refs)
+end
 
 ngrid = 100
 ntimesteps = 100
@@ -103,6 +109,8 @@ end
 posx = 0.3
 posy = 0.3
 sigma = 0.15
+dx = 1./ngrid
+dy = 1./ngrid
 dens = initial_conditions(ngrid, dx, dy, posx, posy, sigma)
 
 if plot
@@ -112,16 +120,12 @@ end
 
 velx = 1.0
 vely = 1.0
-
-velmag = sqrt(velx*velx + vely*vel)
+velmag = sqrt(velx*velx + vely*vely)
 cfl = 0.125
-
-dx = 1./ngrid
-dy = 1./ngrid
 dt = cfl*min(dx, dy)/velmag
 
 for t in 1:ntimesteps
-    timestep(dens, 2, ngrid, velx, vel, dx, dy, dt)
+    timestep(dens, 2, ngrid, velx, vely, dx, dy, dt)
 end
 
 if plot
