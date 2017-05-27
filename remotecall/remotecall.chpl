@@ -1,12 +1,12 @@
 proc main() {
-  config const numTasks = here.numCores;
-
+  const numTasks = here.numPUs();
   coforall tid in 0..#numTasks {
-	  writeln(here.id, here.name, tid);
+      writeln(here.id, " ", here.name, " ", tid);
   }
 
   coforall loc in Locales {
-     on loc {
-		writeln(loc.id, loc.name)
-	}
+    on loc {
+      writeln(loc.id, " ", loc.name);
+    }
+  }
 }
