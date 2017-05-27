@@ -38,8 +38,8 @@ proc output_csv(field, field_domain, filename) {
 }
 
 proc main() {
-  const nguard = 2, start = 1-nguard, end = nguard+ngrid;
-  const ProblemSpace = {1..ngrid, 1..ngrid}, BigSpace = {start..end, start..end},
+  const nguard = 2;
+  const ProblemSpace = {1..ngrid, 1..ngrid}, BigSpace = ProblemSpace.expand(nguard,nguard);
         ProblemDomain : domain(2) dmapped Block(BigSpace) = ProblemSpace,
         BigDomain : domain(2) dmapped Block(BigSpace) = BigSpace;
 
