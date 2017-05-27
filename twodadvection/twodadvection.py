@@ -39,8 +39,6 @@ def dask_step(subdomain, nguard, dx, dy, dt, u):
 
 
 def initial_conditions(x, y, initial_posx=0.3, initial_posy=0.3, sigma=0.15):
-    """Returns a tuple describing the state at the point:
-        (x, y, density(x,y))"""
     xx, yy = np.meshgrid(x, y)
     density = np.exp(-((xx-initial_posx)**2 + (yy-initial_posy)**2)/(sigma**2))
     return density
@@ -82,36 +80,5 @@ if __name__ == "__main__":
 
     if args.plot:
         # Plot pretty results
-        import matplotlib.pylab as plt
-        import matplotlib.cm as cm
-
-        def plot_numpy_array(data, x, y, colorbar=False):
-            """
-            Plots a subdomain
-            """
-            extent = (min(x), max(x), min(y), max(y))
-            levels = np.linspace(np.min(data), np.max(data), num=5)
-
-            im = plt.imshow(data, interpolation='bilinear', origin='lower',
-                            cmap=cm.Blues, extent=extent)
-            if colorbar:
-                plt.colorbar(im, orientation='vertical', shrink=0.8)
-            plt.contour(x, y, data, levels, origin='lower', linewidths=2)
-
-        def plot_dask_array(dadata, x, y, colorbar=False):
-            """
-            Gathers the dask array to a single numpy array and plots it,
-            for the purposes of a demo (obv. wildly implausible for a real
-            simulation)
-            """
-            data = np.array(dadata)
-            plot_numpy_array(data, x, y, colorbar)
-
-        plt.subplots(1, 3)
-        plt.subplot(1, 3, 1)
-        plot_dask_array(subdomain_init, x, y)
-        plt.subplot(1, 3, 2)
-        plot_dask_array(subdomain, x, y)
-        plt.subplot(1, 3, 3)
-        plot_dask_array(subdomain-subdomain_init, x, y)
-        plt.show()
+        import advectionplots
+        advectionplots.plot_three(subdomain_init, subdomain, x, y)

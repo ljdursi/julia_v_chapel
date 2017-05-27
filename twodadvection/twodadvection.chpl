@@ -1,4 +1,5 @@
 use IO;
+use BlockDist;
 
 config var ntimesteps = 100,  // number of timesteps
            ngrid = 101,       // will be ngrid x ngrid mesh
@@ -27,16 +28,19 @@ proc periodic_bc(field, nguard, ngridx, ngridy) {
 
 proc output_csv(field, field_domain, filename) {
   var outfile  = open(filename, iomode.cw);
+  var channel  = outfile.writer();
+  channel.writef("#i, j, dens\n");
   for ij in field_domain {
-    outfile.writef("%i, %i, %g", ij(1), ij(2), field(ij));
+    channel.writef("%i, %i, %r\n", ij(1), ij(2), field(ij));
   }
+  channel.close();
   outfile.close();
 }
 
 proc main() {
   const nguard = 2, start = 1-nguard, end = nguard+ngrid;
   const ProblemSpace = {1..ngrid, 1..ngrid}, BigSpace = {start..end, start..end},
-        ProblemDomain : domain(2) dmapped Block(ProblemSpace) = ProblemSpace,
+        ProblemDomain : domain(2) dmapped Block(BigSpace) = ProblemSpace,
         BigDomain : domain(2) dmapped Block(BigSpace) = BigSpace;
 
   const dx = 1.0/ngrid,
@@ -77,13 +81,13 @@ proc main() {
         grady(ij) = (-dens(ij+(0,2)) + 4*dens(ij+(0,1)) - 3*dens(ij))/(2*dx);
       }
     }
-  }
 
-  // update the density with the gradient
-  forall ij in ProblemSpace {
-      dens(ij) = dens(ij) - dt*(u(0)*gradx(ij) + u(1)*grady(ij));
-  }
+    // update the density with the gradient
+    forall ij in ProblemSpace {
+      dens(ij) = dens(ij) - dt*(velx*gradx(ij) + vely*grady(ij));
+    }
 
+  }
   if output {
     output_csv(dens, ProblemSpace, "final.csv");
   }
