@@ -25,15 +25,15 @@ proc output_csv(field, field_domain, filename) {
 
 proc main() {
   const nguard = 2;
-  const ProblemSpace = {1..ngrid, 1..ngrid};
-        ProblemDomain : domain(2) dmapped stencil(ProblemSpace, fluff=nguard, periodic=true);
+  const ProblemSpace = {1..ngrid, 1..ngrid},
+        ProblemDomain : domain(2) dmapped Stencil(boundingBox=ProblemSpace, fluff=(nguard,nguard), periodic=true);
 
   const dx = 1.0/ngrid,
         dy = 1.0/ngrid,
         speed = sqrt(velx*velx+vely*vely),
         dt = cfl*min(dx, dy)/speed;
 
-  var dens: [ProblemgDomain] real = 0.0;  
+  var dens: [ProblemDomain] real = 0.0;  
 
   // density a gaussian of width sigma centred on (initialposx, initialposy)
   forall ij in ProblemSpace {
