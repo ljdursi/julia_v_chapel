@@ -103,8 +103,8 @@ function timestep(dens, nguard, ngrid, velx, vely, dx, dy, dt)
 end
 
 ngrid = 101
-ntimesteps = 100
-output = true
+ntimesteps = 500
+output = false
 
 nargs = length(ARGS)
 if nargs > 0

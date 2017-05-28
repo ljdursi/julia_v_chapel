@@ -1,5 +1,4 @@
 use IO;
-use BlockDist;
 use StencilDist;
 
 config var ntimesteps = 100,  // number of timesteps
@@ -26,7 +25,7 @@ proc output_csv(field, field_domain, filename) {
 proc main() {
   const nguard = 2;
   const ProblemSpace = {1..ngrid, 1..ngrid},
-        ProblemDomain : domain(2) dmapped Stencil(boundingBox=ProblemSpace, fluff=(nguard,nguard), periodic=true);
+        ProblemDomain : domain(2) dmapped Stencil(boundingBox=ProblemSpace, fluff=(nguard,nguard), periodic=true) = ProblemSpace;
 
   const dx = 1.0/ngrid,
         dy = 1.0/ngrid,
@@ -36,14 +35,14 @@ proc main() {
   var dens: [ProblemDomain] real = 0.0;  
 
   // density a gaussian of width sigma centred on (initialposx, initialposy)
-  forall ij in ProblemSpace {
+  forall ij in ProblemDomain {
     var x = (ij(1)-1.0)/ngrid;
     var y = (ij(2)-1.0)/ngrid;
     dens(ij) = exp(-((x-initialposx)**2 + (y-initialposy)**2)/(sigma**2));
   } 
 
   if output {
-    output_csv(dens, ProblemSpace, "init.csv");
+    output_csv(dens, ProblemDomain, "init.csv");
   }
 
   for iteration in 1..ntimesteps  {
@@ -51,9 +50,9 @@ proc main() {
     dens.updateFluff();
 
     // calculate the upwinded gradient
-    var gradx, grady : [ProblemSpace] real = 0.0;
+    var gradx, grady : [ProblemDomain] real = 0.0;
 
-    forall ij in ProblemSpace {
+    forall ij in ProblemDomain {
       if velx > 0.0 {
         gradx(ij) = (3.0*dens(ij) - 4.0*dens(ij-(1,0)) + dens(ij-(2,0)))/(2*dx);
       } else {
@@ -68,12 +67,12 @@ proc main() {
     }
 
     // update the density with the gradient
-    forall ij in ProblemSpace {
+    forall ij in ProblemDomain {
       dens(ij) = dens(ij) - dt*(velx*gradx(ij) + vely*grady(ij));
     }
 
   }
   if output {
-    output_csv(dens, ProblemSpace, "final.csv");
+    output_csv(dens, ProblemDomain, "final.csv");
   }
 }

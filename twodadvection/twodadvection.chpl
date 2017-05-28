@@ -1,7 +1,7 @@
 use IO;
 use BlockDist;
 
-config var ntimesteps = 100,  // number of timesteps
+config var ntimesteps = 500,  // number of timesteps
            ngrid = 101,       // will be ngrid x ngrid mesh
            output = false,
            initialposx = 0.3,
