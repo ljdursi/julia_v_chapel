@@ -84,14 +84,26 @@ function initial_conditions(ngrid, dx, dy, posx, posy, sigma)
     distribute(dens)
 end
 
+function output_csv(filename, dens)
+    open(filename, "w") do f
+    denslocal = convert(Array, dens)
+        for j in 1:ngrid
+            for i in 1:ngrid
+                d = dens[i,j]
+                write(f,"$i, $j, $d\n")
+            end      
+         end
+    end
+end
+
 function timestep(dens, nguard, ngrid, velx, vely, dx, dy, dt)
     ps = procs(dens)
     refs = [(@spawnat p advect_data(dens, nguard, ngrid, velx, vely, dx, dy, dt)) for p in ps]
     pmap(fetch, refs)
 end
 
-ngrid = 100
-ntimesteps = 10
+ngrid = 101
+ntimesteps = 100
 output = true
 
 nargs = length(ARGS)
@@ -113,15 +125,7 @@ dy = 1./ngrid
 dens = initial_conditions(ngrid, dx, dy, posx, posy, sigma)
 
 if output
-    open("init_jl.csv", "w") do f
-    denslocal = convert(Array, dens)
-        for j in 1:ngrid
-            for i in 1:ngrid
-                d = dens[i,j]
-                write(f,"$i, $j, $d\n")
-            end      
-         end
-    end
+    output_csv("init_jl.csv", dens)
 end
 
 velx = 1.0
@@ -135,13 +139,5 @@ for t in 1:ntimesteps
 end
 
 if output
-    open("final_jl.csv", "w") do f
-    denslocal = convert(Array, dens)
-        for j in 1:ngrid
-            for i in 1:ngrid
-                d = dens[i,j]
-                write(f,"$i, $j, $d\n")
-            end      
-         end
-    end
+    output_csv("final_jl.csv", dens)
 end
