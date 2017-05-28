@@ -102,7 +102,7 @@ function timestep(dens, nguard, ngrid, velx, vely, dx, dy, dt)
     pmap(fetch, refs)
 end
 
-ngrid = 101
+ngrid = 1000
 ntimesteps = 500
 output = false
 
