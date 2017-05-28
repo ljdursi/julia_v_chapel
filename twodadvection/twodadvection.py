@@ -48,7 +48,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', '--ntimesteps', type=np.int, default=500)
     parser.add_argument('-g', '--ngrid', type=np.int, default=101)
-    parser.add_argument('-p', '--plot', action="store_true")
+    parser.add_argument('-P', '--plot', action="store_true")
+    parser.add_argument('-p', '--procs', type=np.int, default=2)
     args = parser.parse_args()
 
     nsteps = args.ntimesteps
@@ -75,7 +76,7 @@ if __name__ == "__main__":
 
     # _this_ performs the execution
     start = time.clock()
-    subdomain = subdomain.compute(num_workers=2, get=mp_get)
+    subdomain = subdomain.compute(num_workers=args.p, get=mp_get)
     print(time.clock() - start, " seconds")
 
     if args.plot:
