@@ -1,7 +1,9 @@
 proc main() {
   const numTasks = here.numPUs();
-  coforall tid in 0..#numTasks {
-      writeln(here.id, " ", here.name, " ", tid);
+  for taskid in 0..#numTasks {
+      begin {
+          writeln(here.id, " ", here.name, " ", taskid);
+      }
   }
 
   coforall loc in Locales {

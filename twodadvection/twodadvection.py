@@ -46,7 +46,7 @@ def initial_conditions(x, y, initial_posx=0.3, initial_posy=0.3, sigma=0.15):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--ntimesteps', type=np.int, default=100)
+    parser.add_argument('-n', '--ntimesteps', type=np.int, default=500)
     parser.add_argument('-g', '--ngrid', type=np.int, default=101)
     parser.add_argument('-p', '--plot', action="store_true")
     args = parser.parse_args()
