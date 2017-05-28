@@ -35,14 +35,14 @@ proc main() {
   var dens: [ProblemDomain] real = 0.0;  
 
   // density a gaussian of width sigma centred on (initialposx, initialposy)
-  forall ij in ProblemDomain {
+  forall ij in ProblemSpace {
     var x = (ij(1)-1.0)/ngrid;
     var y = (ij(2)-1.0)/ngrid;
     dens(ij) = exp(-((x-initialposx)**2 + (y-initialposy)**2)/(sigma**2));
   } 
 
   if output {
-    output_csv(dens, ProblemDomain, "init.csv");
+    output_csv(dens, ProblemSpace, "init.csv");
   }
 
   for iteration in 1..ntimesteps  {
@@ -52,7 +52,7 @@ proc main() {
     // calculate the upwinded gradient
     var gradx, grady : [ProblemDomain] real = 0.0;
 
-    forall ij in ProblemDomain {
+    forall ij in ProblemSpace {
       if velx > 0.0 {
         gradx(ij) = (3.0*dens(ij) - 4.0*dens(ij-(1,0)) + dens(ij-(2,0)))/(2*dx);
       } else {
@@ -67,12 +67,10 @@ proc main() {
     }
 
     // update the density with the gradient
-    forall ij in ProblemDomain {
-      dens(ij) = dens(ij) - dt*(velx*gradx(ij) + vely*grady(ij));
-    }
+    dens(ProblemSpace) = dens(ProblemSpace) - dt*(velx*gradx(ProblemSpace) + vely*grady(ProblemSpace));
 
   }
   if output {
-    output_csv(dens, ProblemDomain, "final.csv");
+    output_csv(dens, ProblemSpace, "final.csv");
   }
 }

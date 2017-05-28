@@ -39,7 +39,7 @@ proc output_csv(field, field_domain, filename) {
 
 proc main() {
   const nguard = 2;
-  const ProblemSpace = {1..ngrid, 1..ngrid}, BigSpace = ProblemSpace.expand(nguard,nguard);
+  const ProblemSpace = {1..ngrid, 1..ngrid}, BigSpace = ProblemSpace.expand(nguard,nguard),
         ProblemDomain : domain(2) dmapped Block(BigSpace) = ProblemSpace,
         BigDomain : domain(2) dmapped Block(BigSpace) = BigSpace;
 
@@ -66,7 +66,7 @@ proc main() {
     periodic_bc(dens, nguard, ngrid, ngrid);
 
     // calculate the upwinded gradient
-    var gradx, grady : [ProblemSpace] real = 0.0;
+    var gradx, grady : [ProblemDomain] real = 0.0;
 
     forall ij in ProblemSpace {
       if velx > 0.0 {
