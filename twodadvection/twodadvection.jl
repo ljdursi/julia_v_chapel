@@ -19,6 +19,7 @@ using PyPlot
         xend   = li[1][end]
         ystart = li[2][1]
         yend   = li[2][end]
+
         for g in 1:nguard
             xsg = (xstart-1-g + ngrid) % ngrid + 1
             xeg = (xend-1+g) % ngrid + 1
@@ -26,13 +27,13 @@ using PyPlot
             ysg = (ystart-1-g + ngrid) % ngrid + 1
             yeg = (yend-1+g) % ngrid + 1
 
-            for i in 1:s[1]
-                data_plus_gc[i, g] = domain[i, yeg]
-                data_plus_gc[i, s[2]+g] = domain[i, ysg]
+            for i in 1+nguard:s[1]+nguard
+                data_plus_gc[i, nguard+1-g] = domain[i-nguard+xstart-1, ysg]
+                data_plus_gc[i, s[2]+nguard+g] = domain[i-nguard+xstart-1, yeg]
             end
-            for j in 1:s[2]
-                data_plus_gc[g, j] = domain[xeg, j]
-                data_plus_gc[s[1]+g, j] = domain[xsg, j]
+            for j in 1+nguard:s[2]+nguard
+                data_plus_gc[nguard+1-g, j] = domain[xsg, j-nguard+ystart-1]
+                data_plus_gc[s[1]+nguard+g, j] = domain[xeg, j-nguard+ystart-1]
             end
         end
     end
@@ -44,14 +45,13 @@ end
 
     s = size(locdens)
     nx = s[1] - 2*nguard
-    nx = s[2] - 2*nguard
+    ny = s[2] - 2*nguard
 
     gradx = zeros(locdens)
     grady = zeros(locdens)
 
-    for j in 1+nguard:ngrid+nguard
-        for i in 1+nguard:ngrid+nguard
-        
+    for j in 1+nguard:ny+nguard
+        for i in 1+nguard:nx+nguard
             if velx > 0
                 gradx[i,j] = (3locdens[i,j] - 4locdens[i-1,j] + locdens[i-2,j])/(2dx)
             else
@@ -68,7 +68,7 @@ end
 
     for j in 1+nguard:ny+nguard
         for i in 1+nguard:nx+nguard
-            locpart(dens)[i-nguard, j-nguard] -= dt*(velx*gradx[i,j] + vely*grady[i,j])
+            localpart(dens)[i-nguard, j-nguard] -= dt*(velx*gradx[i,j] + vely*grady[i,j])
         end
     end
 end
@@ -92,7 +92,7 @@ function timestep(dens, nguard, ngrid, velx, vely, dx, dy, dt)
 end
 
 ngrid = 100
-ntimesteps = 100
+ntimesteps = 10
 plot = true
 
 nargs = length(ARGS)
@@ -116,6 +116,7 @@ dens = initial_conditions(ngrid, dx, dy, posx, posy, sigma)
 if plot
    get_cmap("Blues")
    imshow(convert(Array, dens), cmap="Blues") 
+   show()
 end
 
 velx = 1.0
@@ -131,4 +132,5 @@ end
 if plot
    get_cmap("Blues")
    imshow(convert(Array, dens), cmap="Blues") 
+   show()
 end
