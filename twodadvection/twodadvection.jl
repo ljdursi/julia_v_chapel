@@ -1,6 +1,5 @@
 using DistributedArrays
 @everywhere importall DistributedArrays
-using PyPlot
 
 @everywhere function get_data_plus_gc(domain, nguard, ngrid)
     if myid() in procs(domain)
@@ -93,7 +92,7 @@ end
 
 ngrid = 100
 ntimesteps = 10
-plot = true
+output = true
 
 nargs = length(ARGS)
 if nargs > 0
@@ -103,7 +102,7 @@ if nargs > 1
     ntimesteps = parse(Int32, ARGS[2])
 end
 if nargs > 2
-    plot = parse(Bool, ARGS[2])
+    output = parse(Bool, ARGS[2])
 end
 
 posx = 0.3
@@ -113,10 +112,16 @@ dx = 1./ngrid
 dy = 1./ngrid
 dens = initial_conditions(ngrid, dx, dy, posx, posy, sigma)
 
-if plot
-   get_cmap("Blues")
-   imshow(convert(Array, dens), cmap="Blues") 
-   show()
+if output
+    open("init_jl.csv", "w") do f
+    denslocal = convert(Array, dens)
+        for j in 1:ngrid
+            for i in 1:ngrid
+                d = dens[i,j]
+                write(f,"$i, $j, $d\n")
+            end      
+         end
+    end
 end
 
 velx = 1.0
@@ -129,8 +134,14 @@ for t in 1:ntimesteps
     timestep(dens, 2, ngrid, velx, vely, dx, dy, dt)
 end
 
-if plot
-   get_cmap("Blues")
-   imshow(convert(Array, dens), cmap="Blues") 
-   show()
+if output
+    open("final_jl.csv", "w") do f
+    denslocal = convert(Array, dens)
+        for j in 1:ngrid
+            for i in 1:ngrid
+                d = dens[i,j]
+                write(f,"$i, $j, $d\n")
+            end      
+         end
+    end
 end
