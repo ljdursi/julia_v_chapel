@@ -6,7 +6,7 @@ import argparse
 import time
 
 
-@jit('f8[:](i4, i4, f8, f8, f8, f8, f8)', nopython=True)
+@jit('f8(i4, i4, f8, f8, f8, f8, f8)', nopython=True, nogil=True)
 def onedheat(ngrid, ntimesteps, kappa, xleft, xright, tleft, tright):
     dx = (xright-xleft)/(ngrid-1)
     dt = 0.25*dx*dx/kappa
@@ -21,7 +21,7 @@ def onedheat(ngrid, ntimesteps, kappa, xleft, xright, tleft, tright):
 
         temp[1:ngrid] = temp_new[1:ngrid]
 
-    return temp[1:ngrid]
+    return temp[ngrid//2+1]
 
 
 if __name__ == "__main__":
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     start = time.clock()
-    temps = onedheat(args.ngrid, args.ntimesteps, args.kappa,
+    temp = onedheat(args.ngrid, args.ntimesteps, args.kappa,
                      args.xleft, args.xright, args.tleft, args.tright)
     print(time.clock() - start, " seconds")
-    print(temps[args.ngrid//2])
+    print(temp)
