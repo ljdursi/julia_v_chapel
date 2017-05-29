@@ -21,7 +21,7 @@ function main(ngrid, ntimesteps, kappa=1.0, xleft=0.0, xright=1.0, tleft=-1.0, t
     end
   end
 
-  println(temp[div(ngrid,2)+1])
+  println(temp[div(ngrid,2)+2])
 end
 
 ngrid = 1001
