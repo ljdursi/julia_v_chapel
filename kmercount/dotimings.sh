@@ -9,9 +9,12 @@ time julia ./${BASE}.jl "${INFILE}" > julia-out.txt
 echo ""
 echo "# Chapel"
 echo "## Compile:"
+export CHPL_TARGET_ARCH="native"
+unset CHPL_COMM
+unset GASNET_SPAWNFN
 time chpl --fast ${BASE}.chpl -o ${BASE}_chpl 
 echo "## Run:"
-time ./${BASE}_chpl --input_filename="${INFILE}" > chapel-out.txt
+time ./${BASE}_chpl --input_filename="${INFILE}" --dataParTasksPerLocale=1 > chapel-out.txt
 
 echo ""
 echo "# Python"

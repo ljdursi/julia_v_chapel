@@ -11,7 +11,7 @@ proc main(args: [] string) {
 
   for sequence in sequences {
     for i in 1..(sequence.length-k+1) {
-      var kmer: string = sequence[i..(i+k-1)];
+      var kmer: string = sequence[i..#k];   // k-long, starting at i
       if !kmers.member(kmer) {
         kmer_counts[kmer] = 0;
       } 
