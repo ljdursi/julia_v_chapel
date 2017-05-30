@@ -3,7 +3,7 @@ B = rand(n, n)
 x = rand(n)
 
 A = x*x'
-y = A*x
+y = B*x
 
 println(A[1,1])
 
