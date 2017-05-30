@@ -45,13 +45,12 @@ proc main() {
     output_csv(dens, ProblemSpace, "init.csv");
   }
 
+  var gradx, grady : [ProblemDomain] real = 0.0;
   for iteration in 1..ntimesteps  {
     // update the boundary conditions - periodic
     dens.updateFluff();
 
     // calculate the upwinded gradient
-    var gradx, grady : [ProblemDomain] real = 0.0;
-
     forall ij in ProblemSpace {
       if velx > 0.0 {
         gradx(ij) = (3.0*dens(ij) - 4.0*dens(ij-(1,0)) + dens(ij-(2,0)))/(2*dx);
