@@ -1,0 +1,25 @@
+# Julia
+
+real	2m57.290s
+user	2m56.472s
+sys	0m3.640s
+
+real	4m20.746s
+user	25m40.844s
+sys	3m53.576s
+
+# Chapel
+## Compile:
+
+real	0m20.375s
+user	0m19.744s
+sys	0m0.512s
+## Run:
+
+real	0m0.288s
+user	0m0.000s
+sys	0m0.000s
+
+real	2m25.320s
+user	0m0.000s
+sys	0m0.000s
