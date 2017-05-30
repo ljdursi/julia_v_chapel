@@ -27,7 +27,9 @@ proc calculation(dx, dt, kappa, ngrid, tleft, tright) {
       TNew(i) = T(i) + kappa*dt/(dx*dx) * 
             (T(i+left) - 2*T(i) + T(i+right));
     }
-    TNew <=> T;
+    for i in 1..ngrid {
+      T(i) = TNew(i);
+    }
   } 
 
   return T[ngrid/2];
