@@ -27,12 +27,12 @@ using DistributedArrays
             yeg = (yend-1+g) % ngrid + 1
 
             for i in 1+nguard:s[1]+nguard
-                data_plus_gc[i, nguard+1-g] = domain[i-nguard+xstart-1, ysg]
-                data_plus_gc[i, s[2]+nguard+g] = domain[i-nguard+xstart-1, yeg]
+                @inbounds data_plus_gc[i, nguard+1-g] = domain[i-nguard+xstart-1, ysg]
+                @inbounds data_plus_gc[i, s[2]+nguard+g] = domain[i-nguard+xstart-1, yeg]
             end
             for j in 1+nguard:s[2]+nguard
-                data_plus_gc[nguard+1-g, j] = domain[xsg, j-nguard+ystart-1]
-                data_plus_gc[s[1]+nguard+g, j] = domain[xeg, j-nguard+ystart-1]
+                @inbounds data_plus_gc[nguard+1-g, j] = domain[xsg, j-nguard+ystart-1]
+                @inbounds data_plus_gc[s[1]+nguard+g, j] = domain[xeg, j-nguard+ystart-1]
             end
         end
     end
@@ -52,22 +52,22 @@ end
     for j in 1+nguard:ny+nguard
         for i in 1+nguard:nx+nguard
             if velx > 0
-                gradx[i,j] = (3locdens[i,j] - 4locdens[i-1,j] + locdens[i-2,j])/(2dx)
+                @inbounds gradx[i,j] = (3locdens[i,j] - 4locdens[i-1,j] + locdens[i-2,j])/(2dx)
             else
-                gradx[i-2,j] = (-locdens[i,j] + 4locdens[i-1,j] - 3locdens[i-2,j])/(2dx)
+                @inbounds gradx[i-2,j] = (-locdens[i,j] + 4locdens[i-1,j] - 3locdens[i-2,j])/(2dx)
             end
 
             if vely > 0
-                grady[i,j] = (3locdens[i,j] - 4locdens[i,j-1] + locdens[i,j-1])/(2dy)
+                @inbounds grady[i,j] = (3locdens[i,j] - 4locdens[i,j-1] + locdens[i,j-1])/(2dy)
             else
-                grady[i,j-2] = (-locdens[i,j] + 4locdens[i,j-1] - 3locdens[i,j-2])/(2dy)
+                @inbounds grady[i,j-2] = (-locdens[i,j] + 4locdens[i,j-1] - 3locdens[i,j-2])/(2dy)
             end
         end
     end
 
     for j in 1+nguard:ny+nguard
         for i in 1+nguard:nx+nguard
-            localpart(dens)[i-nguard, j-nguard] -= dt*(velx*gradx[i,j] + vely*grady[i,j])
+            @inbounds localpart(dens)[i-nguard, j-nguard] -= dt*(velx*gradx[i,j] + vely*grady[i,j])
         end
     end
 end
@@ -78,7 +78,7 @@ function initial_conditions(ngrid, dx, dy, posx, posy, sigma)
         y = (j-1)*dy
         for i in 1:ngrid
             x = (i-1)*dx
-            dens[i,j] = exp(-((x-posx)^2 + (y-posy)^2)/(sigma^2))
+            @inbounds dens[i,j] = exp(-((x-posx)^2 + (y-posy)^2)/(sigma^2))
         end 
     end 
     distribute(dens)
@@ -89,7 +89,7 @@ function output_csv(filename, dens)
     denslocal = convert(Array, dens)
         for j in 1:ngrid
             for i in 1:ngrid
-                d = dens[i,j]
+                @inbounds d = dens[i,j]
                 write(f,"$i, $j, $d\n")
             end      
          end
