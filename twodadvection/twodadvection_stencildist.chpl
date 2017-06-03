@@ -66,7 +66,7 @@ proc main() {
     }
 
     // update the density with the gradient
-    dens(ProblemSpace) = dens(ProblemSpace) - dt*(velx*gradx(ProblemSpace) + vely*grady(ProblemSpace));
+    dens = dens - dt*(velx*gradx + vely*grady);
 
   }
   if output {
